@@ -6,9 +6,7 @@
    <meta http-equiv="X-UA-Compatible" content="IE=edge">
    <meta name="viewport" content="width=device-width, initial-scale=1">
    <link rel="icon" href="../../favicon.ico">
-   <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
-   <!-- Custom styles for this template -->
-   <link href="starter-template.css" rel="stylesheet">
+   <link href="css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
    <div class="navbar navbar-inverse navbar-fixed-top">
@@ -33,11 +31,13 @@
                }
                ?>
             </ul>
+            <ul class="nav navbar-nav navbar-right">
+               <li><a href="disconnect.php"><span class="glyphicon glyphicon-off"></span> Se déconnecter</a></li>
+            </ul>
          </div><!--/.nav-collapse -->
       </div>
    </div>
    <div>
-      <button type="button" style="margin-left:5%" onclick="location.href='disconnect.php'" class="btn btn-secondary">Se déconnecter</button>
       <center>
          <h2>Modération de l'utilisateur <?php echo $_POST['pseudo'];?></h2>
       </center>

@@ -84,11 +84,14 @@ if ($connect == "1") // Si le visiteur s'est identifié.
       // Si le fichier n'est pas accepté
       // Redirection page d'import
       header("refresh:3; url=import.php"); // 3 secondes avant redirection
-      echo 'Mauvais format de fichier, upload impossible.';
+      ?>
+      <div class="alert alert-danger" role="alert" style="display:inline-block;list-style-type:none;margin: 0 auto">
+         Mauvais format de fichier, upload impossible !
+      </div>
+      <?php
    } else {
       // Sinon génération HTML + php adéquat
       ?>
-      <button type="button" style="margin-left:5%" onclick="disconnect.php" class="btn btn-secondary">Se déconnecter</button>
       <center>
          <h2> Confirmation de l'upload </h2>
          <?php
@@ -101,7 +104,7 @@ if ($connect == "1") // Si le visiteur s'est identifié.
             htmlspecialchars($_POST['type_de_donnees']),
             htmlspecialchars($_FILES['fichier_importe']['size']),
             htmlspecialchars($_POST['type_de_donnees']). '_'.htmlspecialchars($_FILES['fichier_importe']['name']),
-            date("Y-m-d H:i:s")
+            date("Y-m-d")
          ));
 
          // Si le repertoire uploads/ n'est pas créé, on fait mkdir
@@ -121,7 +124,13 @@ if ($connect == "1") // Si le visiteur s'est identifié.
          // On upload le fichier dans son répertoire
          $upload = upload('fichier_importe','uploads/' . $directory . '/' . htmlspecialchars($_FILES['fichier_importe']['name']) , 10485760, FALSE );
          // Confirmation
-         if ($upload) echo "</br><b>Upload du fichier " . htmlspecialchars($_FILES['fichier_importe']['name']) . " réussi !</b></br></br></br>";
+         if ($upload) {
+            ?>
+            <div class="alert alert-success" role="alert" style="display:inline-block;list-style-type:none;text-align:center">
+               Upload du fichier <?php echo htmlspecialchars($_FILES['fichier_importe']['name']); ?> réussi !
+            </div>
+            <?php
+         }
          ?>
 
          <form action="import.php">

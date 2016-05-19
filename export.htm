@@ -6,9 +6,7 @@
    <meta http-equiv="X-UA-Compatible" content="IE=edge">
    <meta name="viewport" content="width=device-width, initial-scale=1">
    <link rel="icon" href="../../favicon.ico">
-   <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
-   <!-- Custom styles for this template -->
-   <link href="starter-template.css" rel="stylesheet">
+   <link href="css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
    <div class="navbar navbar-inverse navbar-fixed-top">
@@ -33,16 +31,31 @@
                }
                ?>
             </ul>
+            <ul class="nav navbar-nav navbar-right">
+               <li><a href="disconnect.php"><span class="glyphicon glyphicon-off"></span> Se déconnecter</a></li>
+            </ul>
          </div><!--/.nav-collapse -->
       </div>
    </div>
    <div>
-      <button type="button" style="margin-left:5%" onclick="location.href='disconnect.php'" class="btn btn-secondary">Se déconnecter</button>
       <div style="margin:auto; width:500px">
          <h2 style="text-align:center">Exportation des fichiers</h2>
          <input type="text" id ="filter" class="search form-control" placeholder="Que cherchez-vous ?">
-         <span class="counter pull-right"></span>
       </div>
+      <form  method="post" action="export.php" class="form-horizontal">
+         <div class="form-group" style="margin:0 auto; width:500px">
+            <label for="select_nb_elem" class="form_control"> Nombre d'éléments par page ? </label>
+            <select style="width:50px; margin:auto" id="select_nb_elem" name="select_nb_elem" size="1">
+               <option <?php if($_SESSION['messagesParPage'] == "5") echo 'selected="selected"';?>> 5 </option>
+               <option <?php if($_SESSION['messagesParPage'] == "10") echo 'selected="selected"';?>> 10 </option>
+               <option <?php if($_SESSION['messagesParPage'] == "20") echo 'selected="selected"';?>> 20 </option>
+               <option <?php if($_SESSION['messagesParPage'] == "30") echo 'selected="selected"';?>> 30 </option>
+               <option <?php if($_SESSION['messagesParPage'] == "40") echo 'selected="selected"';?>> 40 </option>
+               <option <?php if($_SESSION['messagesParPage'] == "50") echo 'selected="selected"';?>> 50 </option>
+            </select>
+            <input type="submit" name="nb_elem" id="nb_elem" value="OK">
+         </div>
+      </form>
    </div>
 </body>
 </html>

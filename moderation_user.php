@@ -23,16 +23,16 @@ if ($connect == "1") // Si le visiteur s'est identifié.
 
       switch ($newRight) {
          case 2:
-         echo '<p style="text-align:center"> L\'utilisateur ' . $user . ' est à présent Utilisateur</p>';
+         echo '<label style="display:block;text-align:center"> L\'utilisateur ' . $user . ' est à présent Utilisateur</label>';
          break;
          case 3:
-         echo '<p style="text-align:center"> L\'utilisateur ' . $user . ' est à présent Fournisseur</p>';
+         echo '<label style="display:block;text-align:center"> L\'utilisateur ' . $user . ' est à présent Fournisseur</label>';
          break;
          case 4:
-         echo '<p style="text-align:center"> L\'utilisateur ' . $user . ' est à présent Gestionnaire</p>';
+         echo '<label style="display:block;text-align:center"> L\'utilisateur ' . $user . ' est à présent Gestionnaire</label>';
          break;
          case 5:
-         echo '<p style="text-align:center"> L\'utilisateur ' . $user . ' est à présent Administrateur</p>';
+         echo '<label style="display:block;text-align:center"> L\'utilisateur ' . $user . ' est à présent Administrateur</label>';
          break;
       }
    }
@@ -65,6 +65,12 @@ if ($connect == "1") // Si le visiteur s'est identifié.
                </select></br></br></br>
                <input type="hidden" name="pseudo" value="<?php echo $_POST['pseudo']; ?>" />
                <input type="submit" value="Valider" class="btn btn-primary" name="status_validation"></br>
+
+               <div class="btn-group" role="group" aria-label="...">
+                 <button type="button" class="btn btn-default">Left</button>
+                 <button type="button" class="btn btn-default">Middle</button>
+                 <button type="button" class="btn btn-default">Right</button>
+               </div>
             </p>
          </form>
          <form action="moderation.php">

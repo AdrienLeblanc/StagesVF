@@ -6,7 +6,11 @@ session_destroy();
 <html>
 <head>
    <title>Déconnexion</title>
-   <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+   <meta charset="utf-8">
+   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <link rel="icon" href="../../favicon.ico">
+   <link href="css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
    <div class="navbar navbar-inverse navbar-fixed-top">

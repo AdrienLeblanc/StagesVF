@@ -17,17 +17,24 @@ if ($connect == "1") // Si le visiteur s'est identifié.
    $bdd = connexionMySQL();
    /* CONNEXION FAITE */
 
-   include('moderation.htm');
+   if(!isset($_SESSION['messagesParPage']))
+   {
+      $_SESSION['messagesParPage'] = 5;
+   }
 
+   if(isset($_POST['nb_elem']))
+   {
+      $_SESSION['messagesParPage'] = $_POST['select_nb_elem'];
+   }
+
+   include('moderation.htm');
 
    $retour_total = $bdd->query("SELECT COUNT(*) AS total FROM users WHERE pseudo != '" . $_SESSION['pseudo'] . "'"); //Nous récupérons le contenu de la requête dans $retour_total
    $donnees_total = $retour_total->fetch(); //On range retour sous la forme d'un tableau.
    $total = $donnees_total['total']; //On récupère le total pour le placer dans la variable $total.
 
-   $messagesParPage = 5; //Nous allons afficher 5 messages par page.
-
    //Nous allons maintenant compter le nombre de pages.
-   $nombreDePages = ceil($total / $messagesParPage);
+   $nombreDePages = ceil($total / $_SESSION['messagesParPage']);
 
    if(isset($_GET['page'])) // Si la variable $_GET['page'] existe...
    {
@@ -42,34 +49,35 @@ if ($connect == "1") // Si le visiteur s'est identifié.
       $pageActuelle = 1; // La page actuelle est la n°1
    }
 
-   $premiereEntree=($pageActuelle-1)*$messagesParPage; // On calcul la première entrée à lire
+   $premiereEntree=($pageActuelle-1)*$_SESSION['messagesParPage']; // On calcul la première entrée à lire
 
    // La requête sql pour récupérer les messages de la page actuelle.
-   $reponse = $bdd->query('SELECT * FROM files ORDER BY up_id DESC LIMIT '.$premiereEntree.', '.$messagesParPage.'');
+   $reponse = $bdd->query('SELECT * FROM files ORDER BY up_id DESC LIMIT '.$premiereEntree.', '.$_SESSION['messagesParPage'].'');
 
 
    // On récupère tous les utilisateurs et on les liste avec leur statut hiérarchique
    $sql = "SELECT users.pseudo pseudo, users.id_user id_user, users.sign_up sign_up, users.id_status id_status, status.status status";
    $sql .= " FROM status INNER JOIN users AS users ON users.id_status = status.id";
    $sql .= " WHERE pseudo != '" . $_SESSION['pseudo'] . "'"; // on exclue l'admin, qui ne va pas s'ôter des droits quand même !
-   $sql .= " ORDER BY id_user DESC LIMIT ".$premiereEntree.",".$messagesParPage."";
+   $sql .= " ORDER BY id_user DESC LIMIT ".$premiereEntree.",".$_SESSION['messagesParPage']."";
    $reponse = $bdd->query($sql);
 
 
 
 
    ?>
-   <table class="table table-striped" style="margin:auto; width:500px">
+   <table class="table table-striped" style="margin:auto; width:600px;table-layout:fixed; word-wrap:break-word;">
       <?php
       $i = 1;
       ?>
       <thead>
          <tr>
-            <th>#</th>
-            <th class="col-md-1 col-xs-1">Pseudo</th>
-            <th class="col-md-1 col-xs-1">Inscription le</th>
-            <th class="col-md-1 col-xs-1">Statut</th>
-            <th class="col-md-1 col-xs-1">Action</th>
+            <th class="col-md-1 col-xs-1">#</th>
+            <th class="col-md-2 col-xs-2">Pseudo</th>
+            <th class="col-md-2 col-xs-2">Inscription</th>
+            <th class="col-md-3 col-xs-3">Statut</th>
+            <th class="col-md-2 col-xs-2">Action 1</th>
+            <th class="col-md-2 col-xs-3">Action 2</th>
          </tr>
       </thead>
       <tbody class="searchable">
@@ -89,6 +97,12 @@ if ($connect == "1") // Si le visiteur s'est identifié.
                      <input type="submit" class="btn btn-primary" value="Modifier">
                   </form>
                </td>
+               <td>
+                  <form method="post" action="moderation.php">
+                     <input type="hidden" name="pseudoDelete" value="<?php echo $donnees['pseudo']; ?>" />
+                     <input type="submit" class="btn btn-danger" value="Supprimer">
+                  </form>
+               </td>
             </tr>
             <?php
             $i++;
@@ -96,21 +110,65 @@ if ($connect == "1") // Si le visiteur s'est identifié.
          ?>
       </tbody>
    </table>
+   <div class="text-center">
+      <ul class="pagination">
+         <li>
+            <?php if ($pageActuelle - 1 < 1) { ?>
+               <a href="moderation.php?page=<?php echo $pageActuelle ?>" aria-label="Previous">
+                  <span aria-hidden="true">&laquo;</span>
+               </a>
+               <?php
+            } else { ?>
+               <a href="moderation.php?page=<?php echo $pageActuelle - 1 ?>" aria-label="Previous">
+                  <span aria-hidden="true">&laquo;</span>
+               </a>
+               <?php
+            }
+            ?>
+         </li>
+         <?php
+         for ($i = 1; $i <= $nombreDePages; $i++) //On fait notre boucle
+         {
+            //On va faire notre condition
+            if($i == $pageActuelle) //S'il s'agit de la page actuelle...
+            {
+               echo '<li class="active"><a href="#">'.$i.'</a></li>';
+            }
+            else //Sinon...
+            {
+               echo '<li><a href="export.php?page='.$i.'">'.$i.'</a></li>';
+            }
+         }
+         ?>
+         <li>
+            <?php if ($pageActuelle + 1 > $nombreDePages) { ?>
+               <a href="moderation.php?page=<?php echo $pageActuelle ?>" aria-label="Next">
+                  <span aria-hidden="true">&raquo;</span>
+               </a>
+               <?php
+            } else { ?>
+               <a href="moderation.php?page=<?php echo $pageActuelle + 1 ?>" aria-label="Next">
+                  <span aria-hidden="true">&raquo;</span>
+               </a>
+               <?php
+            }
+            ?>
+         </li>
+      </ul>
+   </div>
    <?php
-   echo '<p align="center" >Page : '; //Pour l'affichage, on centre la liste des pages
-   for ($i = 1; $i <= $nombreDePages; $i++) //On fait notre boucle
-   {
-      //On va faire notre condition
-      if($i == $pageActuelle) //S'il s'agit de la page actuelle...
-      {
-         echo ' [ '.$i.' ] ';
-      }
-      else //Sinon...
-      {
-         echo ' <a href="moderation.php?page='.$i.'">'.$i.'</a> ';
-      }
+
+   function deleteUser($bdd, $user) {
+      $reponse = $bdd->exec("DELETE FROM users WHERE pseudo = '" . $user . "'");
+      echo '<label style="display:block;text-align:center">' . $user . ' a été supprimé(e) de la base de données</label>';
    }
-   echo '</p>';
+
+   // si on appuie sur Supprimer (bouton rouge) en face d'un utilisateur
+   if(isset($_POST['pseudoDelete']))
+   {
+      deleteUser($bdd, $_POST['pseudoDelete']);
+   }
+
 } else {
    echo '<p style="text-align:center">Vous n\'êtes pas autorisé(e) à acceder à cette zone</p>';
    ?>
