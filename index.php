@@ -22,14 +22,20 @@ session_start();
          </div>
          <div id="navbar" class="collapse navbar-collapse">
             <ul class="nav navbar-nav">
-               <li><a href="sign_in.php">Identification</a></li>
-               <li><a href="import.php">Importation de données</a></li>
-               <li><a href="export.php">Exportation de données</a></li>
+               <li><a href="src/php/sign_in.php">Identification</a></li>
+               <li><a href="src/php/import.php">Importation de données</a></li>
+               <li><a href="src/php/export.php">Exportation de données</a></li>
                <?php
-               if(isset($_SESSION['status'])) {
+               if(isset($_SESSION['pseudo']))
+               { ?>
+                  <li><a href="src/php/myaccount.php">Mon compte</a></li>
+                  <?php
+               }
+               if(isset($_SESSION['status']))
+               {
                   if($_SESSION['status']=="Administrateur")
                   { ?>
-                     <li><a href="moderation.php">Modération</a></li>
+                     <li><a href="src/php/moderation.php">Modération</a></li>
                      <?php
                   }
                }
