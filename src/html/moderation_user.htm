@@ -9,11 +9,9 @@
    <link href="../../css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-   <div class="navbar navbar-inverse navbar-fixed-top">
+   <div class="navbar navbar-custom navbar-fixed-top">
       <div class="container">
          <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-            </button>
             <a class="navbar-brand" href="../../index.php">Accueil</a>
          </div>
          <div id="navbar" class="collapse navbar-collapse">
@@ -43,14 +41,14 @@
          </div><!--/.nav-collapse -->
       </div>
    </div>
-   <div>
+   <div style="margin:auto; width:500px">
       <center>
          <h2>Modération de l'utilisateur <?php echo htmlspecialchars($_POST['pseudo']);?></h2>
-         <div style="margin:auto; width:500px">
+         <div>
             <form method="post" action="../php/moderation_user.php" class="form-horizontal">
                <div class="form-group">
                   <label for="change_status" class="col-sm-6 control-label"> Statut de <b><?php echo htmlspecialchars($_POST['pseudo']); ?> : </label>
-                     <select class="form-control col-sm-6" style="width:200px; margin:auto" name="change_status" id="change_status" size="1">
+                     <select class="form-control col-sm-6" style="width:200px" name="change_status" id="change_status" size="1">
                         <?php
                         // on met en évidence le  statut du user en le mettant par défaut dans la liste
                         if (isset($_POST['status'])) {

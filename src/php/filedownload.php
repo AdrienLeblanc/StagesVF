@@ -21,7 +21,7 @@ if ($connect == "1") // Si le visiteur s'est identifié.
 
    // Si le fichier est trouvé, alors
    if ($donnees = $reponse->fetch()) {
-      // On renomme le sous-dossiers en anglais
+      // On renomme la variable des sous-dossiers en anglais
       $directory = $donnees['up_type'];
       if ($directory == 'Jeu de données') $directory = 'dataset';
       if ($directory == 'Relevé') $directory = 'survey';
@@ -31,21 +31,20 @@ if ($connect == "1") // Si le visiteur s'est identifié.
       header('Content-Disposition: attachment; filename="'.$donnees["up_finalname"].'"'); // Nom du fichier
       header('Content-Length: '.$donnees["up_filesize"]); // Taille du fichier
       // Envoi du fichier dont le chemin est passé en paramètre
-      readfile("uploads/".$directory.'/'.$donnees["up_filename"].'"');
+      readfile("../../uploads/".$directory.'/'.$donnees["up_filename"].'"');
    } else {
       // Sinon on ne fait rien
       echo "Le fichier n'existe pas";
    }
 } else {
-   echo '<p style="text-align:center">Vous n\'êtes pas autorisé(e) à acceder à cette zone</p>';
    ?>
-   <!DOCTYPE html>
    <head>
       <meta charset="utf-8" />
       <title>Connexion VegFrance</title>
    </head>
    <?php
    include('../html/sign_in.htm');
+   echo '<p style="text-align:center;color:red">Vous n\'êtes pas autorisé(e) à accéder à cette zone</p>';
    exit;
 }
 ?>

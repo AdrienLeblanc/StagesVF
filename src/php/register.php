@@ -56,8 +56,8 @@ else // On est dans le cas traitement
    // Vérification de l'adresse email
 
    // Il faut que l'adresse email n'ait jamais été utilisée
-   $requete=$bdd->prepare('SELECT COUNT(*) AS nb_users FROM users WHERE email =:mail');
-   $requete->bindValue(':mail',$email, PDO::PARAM_STR);
+   $requete=$bdd->prepare('SELECT COUNT(*) AS nb_users FROM users WHERE email =:email');
+   $requete->bindValue(':email',$email, PDO::PARAM_STR);
    $requete->execute();
    $mail_free=($requete->fetchColumn()==0)?1:0;
    $requete->CloseCursor();

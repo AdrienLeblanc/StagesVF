@@ -19,59 +19,84 @@ if ($connect == "1") // Si le visiteur s'est identifié.
    $requete = $bdd->query("SELECT firstname, lastname, pseudo, password, email FROM users WHERE pseudo = '". $_SESSION['pseudo'] ."'");
    $donnees = $requete->fetch();
 
+   $firstname = $donnees['firstname'];
+   $lastname = $donnees['lastname'];
+   $email = $donnees['email'];
+
    include("../html/myaccount.htm");
 
-
    // Si on clique sur enregistrer
-   if(isset($_POST['Enregistrer'])) {
-
+   if(isset($_POST['Enregistrer']))
+   {
       $new_firstname = htmlspecialchars($_POST['firstname']);
       $new_lastname = htmlspecialchars($_POST['lastname']);
       $new_email = htmlspecialchars($_POST['email']);
 
       // On vérifie si un des champs des mots de passe est rentré
-      if(($_POST['old_password'] != NULL) || ($_POST['new_password_1'] != NULL) || ($_POST['new_password_2'] != NULL))
+      if(($_POST['old_password'] != '') && ($_POST['new_password_1'] != '') && ($_POST['new_password_2'] != ''))
       {
-         // On vérifie lesquels ne sont pas renseignés
-         if($_POST['old_password'] == NULL)
+         $old_password = sha1($_POST['old_password']);
+         $new_password_1 = sha1($_POST['new_password_1']);
+         $new_password_2 = sha1($_POST['new_password_2']);
+         $requete2 = $bdd->query("SELECT password FROM users WHERE pseudo = '" . $_SESSION['pseudo'] . "'");
+         $donnees2 = $requete2->fetch();
+         if ($old_password == $donnees2['password'])
          {
-            echo "Vous n'avez pas rentré votre ancien mot de passe";
-         } else if($_POST['new_password_1'] == NULL)
-         {
-            echo "Vous n'avez pas rentré votre nouveau mot de passe";
-         } else if($_POST['new_password_2'] == NULL)
-         {
-            echo "Vous n'avez pas rentré la confirmation de votre nouveau mot de passe";
-         } else { // Si les 3 sont renseignés on les ajoute dans l'insertion de la BDD
-            $old_password = sha1($_POST['email']);
-            $new_password_1 = sha1($_POST['new_password_1']);
-            $new_password_2 = sha1($_POST['new_password_2']);
-
-            // Seulement s'ils sont conformes
-            if ($old_password != $new_password_2 || empty($new_password_1) || empty($new_password_2))
+            if($new_password_1 == $new_password_2)
             {
-               echo "Soit vous avez rentré un faux mot de passe, soit votre nouveau mot de passe et votre confirmation diffèrent";
-            } else { // Insertion SQL
                $sql = "UPDATE users SET firstname = '" . $new_firstname . "', lastname = '" . $new_lastname;
-               $sql .= "', email = '" . $new_email . "', password = '" . $new_password_1 . " WHERE pseudo = '" . $_SESSION['pseudo'] . "'";
-               $requete = $bdd->exec($sql); //requete avec changement de mot de passe
+               $sql .= "', email = '" . $new_email . "', password = '" . $new_password_1 . "' WHERE pseudo = '" . $_SESSION['pseudo'] . "'";
+               $requete = $bdd->exec($sql); // Requete avec changement de mot de passe
+               ?>
+               <center>
+                  <div class="alert alert-success" role="alert" style="display:inline-block;list-style-type:none;text-align:center">
+                     Modification des informations personnelles et du mot de passe effectuées !
+                  </div>
+               </center>
+               <?php
+            } else {
+               ?>
+               <center>
+                  <div class="alert alert-danger" role="alert" style="display:inline-block;list-style-type:none;text-align:center">
+                     Vos deux mots de passe diffèrent.<br> Enregistrement échoué.
+                  </div>
+               </center>
+               <?php
             }
+         } else {
+            ?>
+            <center>
+               <div class="alert alert-danger" role="alert" style="display:inline-block;list-style-type:none;text-align:center">
+                  Vous vous êtes trompé(e) de mot de passe actuel.<br> Enregistrement échoué.
+               </div>
+            </center>
+            <?php
          }
       } else { // Sinon on insert dans la BDD (on écrase toutes les infos) sans les mots de passe
          $sql = "UPDATE users SET firstname = '" . $new_firstname . "', lastname = '" . $new_lastname . "', email = '" . $new_email . "' WHERE pseudo = '" . $_SESSION['pseudo'] . "'";
-         $requete = $bdd->exec($sql); //requete sans changement de mot de passe
+         $requete = $bdd->exec($sql); // Requete sans changement de mot de passe
+         ?>
+         <center>
+            <div class="alert alert-success" role="alert" style="display:inline-block;list-style-type:none;text-align:center">
+               Modification des informations personnelles effectuées !
+            </div>
+         </center>
+         <?php
       }
-      // Refresh page pour actualiser les infos dans les inputs, je n'ai rien trouvé de mieux
-      // /!\ /!\ /!\ /!\ ATTENTION FORAIN /!\ /!\ /!\ /!\
-      ?>
-      <script>
-      window.location.reload();
-      </script>
-      <?php
+      $firstname = $new_firstname;
+      $lastname = $new_lastname;
+      $email = $new_email;
    }
 
+   // On met à jour les inputs avec les bonnes informations
+   ?>
+   <script type="text/javascript">
+   document.getElementById("firstname").value = "<?php echo $firstname ?>";
+   document.getElementById("lastname").value = "<?php echo $lastname ?>";
+   document.getElementById("email").value = "<?php echo $email ?>";
+   </script>
+   <?php
 } else {
-   echo '<p style="text-align:center">Vous n\'êtes pas autorisé(e) à acceder à cette zone</p>';
    ?>
    <head>
       <meta charset="utf-8" />
@@ -79,6 +104,7 @@ if ($connect == "1") // Si le visiteur s'est identifié.
    </head>
    <?php
    include('../html/sign_in.htm');
+   echo '<p style="text-align:center;color:red">Vous n\'êtes pas autorisé(e) à accéder à cette zone</p>';
    exit;
 }
 ?>

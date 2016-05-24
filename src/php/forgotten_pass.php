@@ -82,9 +82,6 @@ if(isset($_POST['recover']))
             <?php
          }
       }
-   } else {
-
    }
-
 }
 ?>

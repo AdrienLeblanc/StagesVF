@@ -61,7 +61,7 @@ if ($connect == "1") // Si le visiteur s'est identifié.
          <tr>
             <th class="col-md-1 col-xs-1">ID</th>
             <th class="col-md-2 col-xs-2">Type de données</th>
-            <th class="col-md-4 col-xs-4">Nom fichier</th>
+            <th class="col-md-3 col-xs-3">Nom fichier</th>
             <th class="col-md-2 col-xs-2">Date upload</th>
             <th class="col-md-2 col-xs-2">Action</th>
          </tr>
@@ -91,7 +91,8 @@ if ($connect == "1") // Si le visiteur s'est identifié.
    <div class="text-center">
       <ul class="pagination">
          <li>
-            <?php if ($pageActuelle - 1 < 1) { ?>
+            <?php
+            if ($pageActuelle - 1 < 1) { ?>
                <a href="export.php?page=<?php echo $pageActuelle ?>" aria-label="Previous">
                   <span aria-hidden="true">&laquo;</span>
                </a>
@@ -105,16 +106,30 @@ if ($connect == "1") // Si le visiteur s'est identifié.
             ?>
          </li>
          <?php
+         $points = FALSE;
          for ($i = 1; $i <= $nombreDePages; $i++) //On fait notre boucle
          {
-            //On va faire notre condition
-            if($i == $pageActuelle) //S'il s'agit de la page actuelle...
+            if($i == $pageActuelle)
             {
                echo '<li class="active"><a href="#">'.$i.'</a></li>';
             }
-            else //Sinon...
+            else if($i <= 2)
             {
-               echo ' <li><a href="export.php?page='.$i.'">'.$i.'</a></li>';
+               echo '<li><a href="export.php?page='.$i.'">'.$i.'</a></li>';
+            }
+            else if($i == ($pageActuelle - 1) OR $i == ($pageActuelle + 1))
+            {
+               echo '<li><a href="export.php?page='.$i.'">'.$i.'</a></li>';
+               $points = FALSE;
+            }
+            else if($i >= ($nombreDePages - 1))
+            {
+               echo '<li><a href="export.php?page='.$i.'">'.$i.'</a></li>';
+            }
+            else if(!$points)
+            {
+               echo '<li><a href="export.php?page='.$i.'">'.'...'.'</a></li>';
+               $points = TRUE;
             }
          }
          ?>
@@ -136,7 +151,6 @@ if ($connect == "1") // Si le visiteur s'est identifié.
    </div>
    <?php
 } else {
-   echo '<p style="text-align:center">Vous n\'êtes pas autorisé(e) à acceder à cette zone</p>';
    ?>
    <head>
       <meta charset="utf-8" />
@@ -144,6 +158,7 @@ if ($connect == "1") // Si le visiteur s'est identifié.
    </head>
    <?php
    include('../html/sign_in.htm');
+   echo '<p style="text-align:center;color:red">Vous n\'êtes pas autorisé(e) à accéder à cette zone</p>';
    exit;
 }
 ?>

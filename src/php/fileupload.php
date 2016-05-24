@@ -20,8 +20,9 @@ if ($connect == "1") // Si le visiteur s'est identifié.
    ?> <title>Importation</title>
    <?php
 
-   function upload($index,$destination,$maxsize=FALSE,$extensions=FALSE)
+   function check_upload($index,$destination,$maxsize=FALSE,$extensions=FALSE)
    {
+      $check = TRUE;
       //Test1: fichier correctement uploadé
       if (!isset($_FILES[$index]) OR $_FILES[$index]['error'] > 0)
       {
@@ -30,7 +31,7 @@ if ($connect == "1") // Si le visiteur s'est identifié.
             Erreur survenue lors de l'upload.
          </div> <br>
          <?php
-         return FALSE;
+         $check = FALSE;
       }
       //Test2: taille limite
       if ($maxsize !== FALSE AND $_FILES[$index]['size'] > $maxsize){
@@ -39,7 +40,7 @@ if ($connect == "1") // Si le visiteur s'est identifié.
             Fichier trop important (taille maximale : 500 MB).
          </div> <br>
          <?php
-         return FALSE;
+         $check = FALSE;
       }
       //Test3: extension
       $ext = substr(strrchr($_FILES[$index]['name'],'.'),1);
@@ -50,21 +51,21 @@ if ($connect == "1") // Si le visiteur s'est identifié.
             Mauvaise extension de fichier (seuls les fichier .csv sont acceptés).
          </div> <br>
          <?php
-         return FALSE;
+         $check = FALSE;
       }
       // Faire ici la VERIFICATION (algorithme de Mikael)
 
-      // if verification_mikael()
-      if (true)
+      // if verification_mikael() + $bool
+      if ($check)
       {
          ?>
          <div class="alert alert-success" role="alert" style="display:inline-block;list-style-type:none;text-align:center">
             Fichier accepté par la vérification !
          </div> <br>
          <?php
-         //Déplacement
-         return move_uploaded_file($_FILES[$index]['tmp_name'],$destination);
       }
+      return $check;
+
       // } else {
       //    header('Content-Transfer-Encoding: binary'); // Transfert en binaire (fichier)
       //    header('Content-Disposition: attachment; filename="log.txt"'); // Nom du fichier
@@ -92,17 +93,6 @@ if ($connect == "1") // Si le visiteur s'est identifié.
       //dans $fichier par un tiret "-" et qui place le résultat dans $fichier.
       $fichier = preg_replace('/([^.a-z0-9_]+)/i', '-', $fichier);
 
-      // Insertion dans la BDD des données du fichier importé
-      // Attention à la dateTime, source d'erreurs
-      $req = $bdd->prepare('INSERT INTO files(up_filename, up_type, up_filesize, up_finalname, up_filedate) VALUES(?,?,?,?,?)');
-      $req->execute(array(
-         $fichier,
-         htmlspecialchars($_POST['type_de_donnees']),
-         htmlspecialchars($_FILES['fichier_importe']['size']),
-         htmlspecialchars($_POST['type_de_donnees']). '_'.$fichier,
-         date("Y-m-d")
-      ));
-
       // Si le repertoire uploads/ n'est pas créé, on fait mkdir
       if (!is_dir("../../uploads/")) mkdir('../../uploads/', 0777, true);
       // De même pour les 3 sous-dossiers correspondants aux types de données
@@ -120,14 +110,26 @@ if ($connect == "1") // Si le visiteur s'est identifié.
       if(isset($true_directory))
       {
          // On upload le fichier dans son répertoire
-         $upload = upload('fichier_importe','../../uploads/' . $true_directory . '/' . $fichier , 524288000, array('png','csv','jpg','jpeg') );
+         $upload_possible = check_upload('fichier_importe','../../uploads/' . $true_directory . '/' . $fichier , 524288000, array('png','csv','jpg','jpeg') );
          // Confirmation
-         if ($upload) {
+         if ($upload_possible) {
+            move_uploaded_file($_FILES['fichier_importe']['tmp_name'],'../../uploads/' . $true_directory . '/' . $fichier);
             ?>
             <div class="alert alert-success" role="alert" style="display:inline-block;list-style-type:none;text-align:center">
                Upload du fichier <?php echo htmlspecialchars($fichier); ?> réussi !
             </div>
             <?php
+
+            // Insertion dans la BDD des données du fichier importé
+            $req = $bdd->prepare('INSERT INTO files(up_filename, up_type, up_filesize, up_finalname, up_filedate) VALUES(?,?,?,?,?)');
+            $req->execute(array(
+               $fichier,
+               htmlspecialchars($_POST['type_de_donnees']),
+               htmlspecialchars($_FILES['fichier_importe']['size']),
+               htmlspecialchars($_POST['type_de_donnees']). '_'.$fichier,
+               date("Y-m-d")
+            ));
+
          } else {
             ?>
             <div class="alert alert-danger" role="alert" style="display:inline-block;list-style-type:none;text-align:center">
@@ -147,7 +149,6 @@ if ($connect == "1") // Si le visiteur s'est identifié.
 </html>
 <?php
 } else {
-   echo '<p style="text-align:center">Vous n\'êtes pas autorisé(e) à acceder à cette zone</p>';
    ?>
    <head>
       <meta charset="utf-8" />
@@ -155,6 +156,7 @@ if ($connect == "1") // Si le visiteur s'est identifié.
    </head>
    <?php
    include('../html/sign_in.htm');
+   echo '<p style="text-align:center;color:red">Vous n\'êtes pas autorisé(e) à accéder à cette zone</p>';
    exit;
 }
 ?>

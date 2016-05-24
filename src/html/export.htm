@@ -9,11 +9,9 @@
    <link href="../../css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-   <div class="navbar navbar-inverse navbar-fixed-top">
+   <div class="navbar navbar-custom navbar-fixed-top">
       <div class="container">
          <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-            </button>
             <a class="navbar-brand" href="../../index.php">Accueil</a>
          </div>
          <div id="navbar" class="collapse navbar-collapse">
@@ -43,25 +41,27 @@
          </div><!--/.nav-collapse -->
       </div>
    </div>
-   <div>
-      <div style="margin:auto; width:500px">
-         <h2 style="text-align:center">Exportation des fichiers</h2>
-         <input type="text" id ="filter" class="search form-control" placeholder="Que cherchez-vous ?">
-      </div>
-      <form  method="post" action="../php/export.php" class="form-horizontal">
-         <div class="form-group" style="margin:0 auto; width:500px">
-            <label for="select_nb_elem" class="form_control"> Nombre d'éléments par page ? </label>
-            <select style="width:50px; margin:auto" id="select_nb_elem" name="select_nb_elem" size="1">
-               <option <?php if($_SESSION['messagesParPage'] == "5") echo 'selected="selected"';?>> 5 </option>
-               <option <?php if($_SESSION['messagesParPage'] == "10") echo 'selected="selected"';?>> 10 </option>
-               <option <?php if($_SESSION['messagesParPage'] == "20") echo 'selected="selected"';?>> 20 </option>
-               <option <?php if($_SESSION['messagesParPage'] == "30") echo 'selected="selected"';?>> 30 </option>
-               <option <?php if($_SESSION['messagesParPage'] == "40") echo 'selected="selected"';?>> 40 </option>
-               <option <?php if($_SESSION['messagesParPage'] == "50") echo 'selected="selected"';?>> 50 </option>
-            </select>
-            <input type="submit" name="nb_elem" id="nb_elem" value="OK">
+   <div style="margin:0 auto; width:500px">
+      <center>
+         <div>
+            <h2>Exportation des fichiers</h2>
+            <input type="text" id ="filter" class="search form-control" placeholder="Que cherchez-vous ?">
          </div>
-      </form>
+         <form method="post" action="../php/export.php" class="form-horizontal">
+            <div class="form-group">
+               <label for="select_nb_elem" class="col-sm-6 control-label"> Nombre d'éléments par page ? </label>
+               <select class="form-control col-sm-5" style="width:70px" id="select_nb_elem" name="select_nb_elem" size="1">
+                  <option <?php if($_SESSION['messagesParPage'] == "5") echo 'selected="selected"';?>> 5 </option>
+                  <option <?php if($_SESSION['messagesParPage'] == "10") echo 'selected="selected"';?>> 10 </option>
+                  <option <?php if($_SESSION['messagesParPage'] == "20") echo 'selected="selected"';?>> 20 </option>
+                  <option <?php if($_SESSION['messagesParPage'] == "30") echo 'selected="selected"';?>> 30 </option>
+                  <option <?php if($_SESSION['messagesParPage'] == "40") echo 'selected="selected"';?>> 40 </option>
+                  <option <?php if($_SESSION['messagesParPage'] == "50") echo 'selected="selected"';?>> 50 </option>
+               </select>
+               <input type="submit" class="btn btn-md btn-info col-sm-2" name="nb_elem" id="nb_elem" value="OK">
+            </div>
+         </form>
+      </center>
    </div>
 </body>
 </html>

@@ -45,7 +45,6 @@ if ($connect == "1") // Si le visiteur s'est identifié.
       modifyUserRights($bdd, htmlspecialchars($_POST['change_status']));
    }
 } else {
-   echo '<p style="text-align:center">Vous n\'êtes pas autorisé(e) à acceder à cette zone</p>';
    ?>
    <head>
       <meta charset="utf-8" />
@@ -53,6 +52,7 @@ if ($connect == "1") // Si le visiteur s'est identifié.
    </head>
    <?php
    include('../html/sign_in.htm');
+   echo '<p style="text-align:center;color:red">Vous n\'êtes pas autorisé(e) à accéder à cette zone</p>';
    exit;
 }
 ?>
