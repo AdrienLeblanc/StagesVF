@@ -11,7 +11,7 @@ else
 
 if ($connect == "1") // Si le visiteur s'est identifié.
 {
-   if ($_SESSION['status'] == 'Administrateur')
+   if ($_SESSION['status'] == 'Administrateur' || $_SESSION['status'] == 'Gestionnaire')
    {
       /* CONNEXION BDD */
       include ('../../config/connection.php');
@@ -28,11 +28,13 @@ if ($connect == "1") // Si le visiteur s'est identifié.
          $_SESSION['messagesParPage'] = htmlspecialchars($_POST['select_nb_elem']);
       }
 
-      include('../html/moderation.htm');
+      include ('../html/authorizations_management.htm');
 
-      $retour_total = $bdd->query("SELECT COUNT(*) AS total FROM users WHERE pseudo != '" . $_SESSION['pseudo'] . "'"); //Nous récupérons le contenu de la requête dans $retour_total
+      $retour_total = $bdd->query('SELECT COUNT(*) AS total FROM request WHERE allowed = FALSE'); //Nous récupérons le contenu de la requête dans $retour_total
       $donnees_total = $retour_total->fetch(); //On range retour sous la forme d'un tableau.
       $total = $donnees_total['total']; //On récupère le total pour le placer dans la variable $total.
+
+
 
       //Nous allons maintenant compter le nombre de pages.
       $nombreDePages = ceil($total / $_SESSION['messagesParPage']);
@@ -53,28 +55,17 @@ if ($connect == "1") // Si le visiteur s'est identifié.
       $premiereEntree=($pageActuelle-1)*$_SESSION['messagesParPage']; // On calcul la première entrée à lire
 
       // La requête sql pour récupérer les messages de la page actuelle.
-      $reponse = $bdd->query('SELECT * FROM files ORDER BY up_id DESC LIMIT '.$premiereEntree.', '.$_SESSION['messagesParPage'].'');
-
-      // On récupère tous les utilisateurs et on les liste avec leur statut hiérarchique
-      $sql = "SELECT users.pseudo pseudo, users.id_user id_user, users.sign_up sign_up, users.id_status id_status, status.status status";
-      $sql .= " FROM status INNER JOIN users AS users ON users.id_status = status.id";
-      $sql .= " WHERE pseudo != '" . $_SESSION['pseudo'] . "'"; // on exclue l'admin, qui ne va pas s'ôter des droits quand même !
-      $sql .= " ORDER BY id_user DESC LIMIT ".$premiereEntree.",".$_SESSION['messagesParPage']."";
-      $reponse = $bdd->query($sql);
+      $reponse = $bdd->query('SELECT * FROM request WHERE allowed = FALSE ORDER BY requester LIMIT '.$premiereEntree.', '.$_SESSION['messagesParPage'].'');
 
       ?>
       <table class="table table-striped" style="margin:auto; width:600px;table-layout:fixed; word-wrap:break-word;">
-         <?php
-         $i = 1;
-         ?>
          <thead>
             <tr>
-               <th class="col-md-1 col-xs-1">#</th>
-               <th class="col-md-2 col-xs-2">Pseudo</th>
-               <th class="col-md-2 col-xs-2">Inscription</th>
-               <th class="col-md-3 col-xs-3">Statut</th>
-               <th class="col-md-2 col-xs-2">Action 1</th>
-               <th class="col-md-2 col-xs-3">Action 2</th>
+               <th class="col-md-1 col-xs-1">ID</th>
+               <th class="col-md-3 col-xs-3">Nom fichier</th>
+               <th class="col-md-2 col-xs-2">Date</th>
+               <th class="col-md-2 col-xs-2">Demandeur</th>
+               <th class="col-md-2 col-xs-2">Action</th>
             </tr>
          </thead>
          <tbody class="searchable">
@@ -83,26 +74,18 @@ if ($connect == "1") // Si le visiteur s'est identifié.
             {
                ?>
                <tr>
-                  <th scope="row"> <?php echo $i; ?> </th>
-                  <td> <?php echo "<b>".$donnees['pseudo']."</b>"; ?> </td>
-                  <td> <?php echo $donnees['sign_up']; ?> </td>
-                  <td> <?php echo "<b>".$donnees['status']."</b>"; ?> </td>
+                  <td> <?php echo "<b>".$donnees['id_request']."</b>"; ?> </td>
+                  <td> <?php echo "<b>".$donnees['filename']."</b>"; ?> </td>
+                  <td> <?php echo $donnees['date_request']; ?> </td>
+                  <td> <?php echo "<b>".$donnees['requester']."</b>"; ?> </td>
                   <td>
-                     <form method="post" action="moderation_user.php">
-                        <input type="hidden" name="status" value="<?php echo $donnees['status']; ?>" />
-                        <input type="hidden" name="pseudo" value="<?php echo $donnees['pseudo']; ?>" />
-                        <input type="submit" class="btn btn-primary" value="Modifier">
-                     </form>
-                  </td>
-                  <td>
-                     <form method="post" action="moderation.php">
-                        <input type="hidden" name="pseudoDelete" value="<?php echo $donnees['pseudo']; ?>" />
-                        <input type="submit" class="btn btn-danger" value="Supprimer">
+                     <form method="post" action="authorizations_management.php">
+                        <input type="hidden" name="id" value="<?php echo htmlspecialchars($donnees['id_file']); ?>" />
+                        <input type="submit" name="allow" class="btn btn-primary" value="Autoriser">
                      </form>
                   </td>
                </tr>
                <?php
-               $i++;
             }
             ?>
          </tbody>
@@ -110,13 +93,14 @@ if ($connect == "1") // Si le visiteur s'est identifié.
       <div class="text-center">
          <ul class="pagination">
             <li>
-               <?php if ($pageActuelle - 1 < 1) { ?>
-                  <a href="moderation.php?page=<?php echo $pageActuelle ?>" aria-label="Previous">
+               <?php
+               if ($pageActuelle - 1 < 1) { ?>
+                  <a href="authorizations_management.php?page=<?php echo $pageActuelle ?>" aria-label="Previous">
                      <span aria-hidden="true">&laquo;</span>
                   </a>
                   <?php
                } else { ?>
-                  <a href="moderation.php?page=<?php echo $pageActuelle - 1 ?>" aria-label="Previous">
+                  <a href="authorizations_management.php?page=<?php echo $pageActuelle - 1?>" aria-label="Previous">
                      <span aria-hidden="true">&laquo;</span>
                   </a>
                   <?php
@@ -133,32 +117,32 @@ if ($connect == "1") // Si le visiteur s'est identifié.
                }
                else if($i <= 2)
                {
-                  echo '<li><a href="export.php?page='.$i.'">'.$i.'</a></li>';
+                  echo '<li><a href="authorizations_management.php?page='.$i.'">'.$i.'</a></li>';
                }
                else if($i == ($pageActuelle - 1) OR $i == ($pageActuelle + 1))
                {
-                  echo '<li><a href="export.php?page='.$i.'">'.$i.'</a></li>';
+                  echo '<li><a href="authorizations_management.php?page='.$i.'">'.$i.'</a></li>';
                   $points = FALSE;
                }
                else if($i >= ($nombreDePages - 1))
                {
-                  echo '<li><a href="export.php?page='.$i.'">'.$i.'</a></li>';
+                  echo '<li><a href="authorizations_management.php?page='.$i.'">'.$i.'</a></li>';
                }
                else if(!$points)
                {
-                  echo '<li><a href="export.php?page='.$i.'">'.'...'.'</a></li>';
+                  echo '<li><a href="authorizations_management.php?page='.$i.'">'.'...'.'</a></li>';
                   $points = TRUE;
                }
             }
             ?>
             <li>
                <?php if ($pageActuelle + 1 > $nombreDePages) { ?>
-                  <a href="moderation.php?page=<?php echo $pageActuelle ?>" aria-label="Next">
+                  <a href="authorizations_management.php?page=<?php echo $pageActuelle ?>" aria-label="Next">
                      <span aria-hidden="true">&raquo;</span>
                   </a>
                   <?php
                } else { ?>
-                  <a href="moderation.php?page=<?php echo $pageActuelle + 1 ?>" aria-label="Next">
+                  <a href="authorizations_management.php?page=<?php echo $pageActuelle + 1 ?>" aria-label="Next">
                      <span aria-hidden="true">&raquo;</span>
                   </a>
                   <?php
@@ -169,21 +153,18 @@ if ($connect == "1") // Si le visiteur s'est identifié.
       </div>
       <?php
 
-      function deleteUser($bdd, $user) {
-         $reponse = $bdd->exec("DELETE FROM users WHERE pseudo = '" . $user . "'");
-         echo '<label style="display:block;text-align:center">' . $user . ' a été supprimé(e) de la base de données</label>';
+      // Si admin clique sur Autoriser en face d'un fichier
+      if (isset($_POST['allow']))
+      {
+         // On update la valeur allowed à TRUE pour le fichier
+         $requete = $bdd->exec("UPDATE request SET allowed = TRUE WHERE id_file ='".$_POST['id']."'");
       }
 
-      // si on appuie sur Supprimer (bouton rouge) en face d'un utilisateur
-      if(isset($_POST['pseudoDelete']))
-      {
-         deleteUser($bdd, htmlspecialchars($_POST['pseudoDelete']));
-      }
    } else {
       ?>
       <head>
          <meta charset="utf-8" />
-         <title>Modération</title>
+         <title>Autorisations</title>
       </head>
       <?php
       include ('../html/blank_page.htm');

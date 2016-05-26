@@ -9,16 +9,22 @@
    <link href="../../css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-   <div class="navbar navbar-custom navbar-fixed-top">
+   <div class="navbar navbar-default navbar-fixed-top">
       <div class="container">
          <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
             <a class="navbar-brand" href="../../index.php">Accueil</a>
          </div>
          <div id="navbar" class="collapse navbar-collapse">
             <ul class="nav navbar-nav">
                <li><a href="../php/sign_in.php">Identification</a></li>
-               <li><a href="../php/import.php">Importation de données</a></li>
-               <li><a href="../php/export.php">Exportation de données</a></li>
+               <li><a href="../php/import.php">Importation</a></li>
+               <li><a href="../php/export.php">Exportation</a></li>
                <?php
                if(isset($_SESSION['pseudo']))
                { ?>
@@ -27,17 +33,32 @@
                }
                if(isset($_SESSION['status']))
                {
+                  if($_SESSION['status']=="Administrateur" || $_SESSION['status']=="Gestionnaire")
+                  {
+                     ?>
+                     <li><a href="../php/authorizations_management.php">Autorisations</a></li>
+                     <?php
+                  }
                   if($_SESSION['status']=="Administrateur")
                   { ?>
                      <li class="active"><a href="../php/moderation.php">Modération</a></li>
+                     <?php
+                  } else if($_SESSION['status']!="Gestionnaire")
+                  {?>
+                     <li><a href="../php/requests.php">Mes demandes d'exportation</a></li>
                      <?php
                   }
                }
                ?>
             </ul>
-            <ul class="nav navbar-nav navbar-right">
-               <li><a href="../php/disconnect.php"><span class="glyphicon glyphicon-off"></span> Se déconnecter</a></li>
-            </ul>
+            <?php
+            if (isset($_SESSION['status']))
+            {?>
+               <ul class="nav navbar-nav navbar-right">
+                  <li><a href="../php/disconnect.php"><span class="glyphicon glyphicon-off"></span> Se déconnecter</a></li>
+               </ul>
+               <?php
+            }?>
          </div><!--/.nav-collapse -->
       </div>
    </div>
@@ -67,10 +88,10 @@
                            <?php
                         }
                         ?>
-                     </select></br></br></br>
+                     </select></br></br>
                   </div>
                   <input type="hidden" name="pseudo" value="<?php echo htmlspecialchars($_POST['pseudo']); ?>" />
-                  <input type="submit" value="Valider" class="btn btn-primary" name="status_validation"></br>
+                  <input type="submit" value="Valider" class="btn btn-primary" name="status_validation"></br></br>
                </form>
                <form action="../php/moderation.php">
                   <input type="submit" class="btn btn-secondary" value="Retour">
@@ -80,3 +101,5 @@
       </div>
    </body>
    </html>
+   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+   <script src="../../js/bootstrap.min.js"></script>

@@ -41,8 +41,8 @@ if(isset($_POST['recover']))
             $new_password = chaine_aleatoire(8);
             $sha1 = sha1($new_password);
             $subject = "VegFrance mot de passe perdu";
-            $message = "Votre pseudo : <b>" . $pseudo ."</b> \n" .
-            "Votre nouveau mot de passe : <b>" . $new_password . "</b> \n" .
+            $message = "Votre pseudo : " . $pseudo ."\n" .
+            "Votre nouveau mot de passe : " . $new_password . "\n" .
             'Reconnectez vous en cliquant sur ce lien : https://vegfrance.univ-rennes1.fr/StagesVF/src/php/sign_in.php">';
             $expeditor = "From: noreply@VegFrance.fr";
 

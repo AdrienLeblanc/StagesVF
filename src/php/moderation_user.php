@@ -11,38 +11,72 @@ else
 
 if ($connect == "1") // Si le visiteur s'est identifié.
 {
-   /* CONNEXION BDD */
-   include ('../../config/connection.php');
-   $bdd = connexionMySQL();
-   /* CONNEXION FAITE */
-
-   function modifyUserRights($bdd, $newRight)
+   if ($_SESSION['status'] == 'Administrateur')
    {
-      $user = htmlspecialchars($_POST['pseudo']);
-      $requete = $bdd->exec("UPDATE users SET id_status = '" . $newRight . "' WHERE pseudo = '" . $user . "'");
+      /* CONNEXION BDD */
+      include ('../../config/connection.php');
+      $bdd = connexionMySQL();
+      /* CONNEXION FAITE */
 
-      switch ($newRight) {
-         case 2:
-         echo '<label style="display:block;text-align:center"> L\'utilisateur ' . $user . ' est à présent Utilisateur</label>';
-         break;
-         case 3:
-         echo '<label style="display:block;text-align:center"> L\'utilisateur ' . $user . ' est à présent Fournisseur</label>';
-         break;
-         case 4:
-         echo '<label style="display:block;text-align:center"> L\'utilisateur ' . $user . ' est à présent Gestionnaire</label>';
-         break;
-         case 5:
-         echo '<label style="display:block;text-align:center"> L\'utilisateur ' . $user . ' est à présent Administrateur</label>';
-         break;
+      function modifyUserRights($bdd, $newRight)
+      {
+         $user = htmlspecialchars($_POST['pseudo']);
+         $requete = $bdd->exec("UPDATE users SET id_status = '" . $newRight . "' WHERE pseudo = '" . $user . "'");
+         ?>
+         <br><br>
+         <center>
+            <?php
+            switch ($newRight) {
+               case 2:
+               ?>
+               <div class="alert alert-success" role="alert" style="display:inline-block;list-style-type:none;text-align:center">
+                  L'utilisateur <?php echo $user ?> est à présent Utilisateur
+               </div> <br>
+               <?php
+               break;
+               case 3:
+               ?>
+               <div class="alert alert-success" role="alert" style="display:inline-block;list-style-type:none;text-align:center">
+                  L'utilisateur <?php echo $user ?> est à présent Fournisseur
+               </div> <br>
+               <?php
+               break;
+               case 4:
+               ?>
+               <div class="alert alert-success" role="alert" style="display:inline-block;list-style-type:none;text-align:center">
+                  L'utilisateur <?php echo $user ?> est à présent Gestionnaire
+               </div> <br>
+               <?php
+               break;
+               case 5:
+               ?>
+               <div class="alert alert-success" role="alert" style="display:inline-block;list-style-type:none;text-align:center">
+                  L'utilisateur <?php echo $user ?> est à présent Administrateur
+               </div> <br>
+               <?php
+               break;
+            }
+            ?>
+         </center>
+         <?php
       }
-   }
 
-   include('../html/moderation_user.htm');
+      include('../html/moderation_user.htm');
 
-   // Si le bouton 'valider' est cliqué, alors on écrase le statut choisi sur le statut de l'utilisateur
-   if (isset($_POST['status_validation']))
-   {
-      modifyUserRights($bdd, htmlspecialchars($_POST['change_status']));
+      // Si le bouton 'valider' est cliqué, alors on écrase le statut choisi sur le statut de l'utilisateur
+      if (isset($_POST['status_validation']))
+      {
+         modifyUserRights($bdd, htmlspecialchars($_POST['change_status']));
+      }
+   } else {
+      ?>
+      <head>
+         <meta charset="utf-8" />
+         <title>Modération</title>
+      </head>
+      <?php
+      include ('../html/blank_page.htm');
+      echo '<p style="text-align:center;margin-top:10%">Votre statut ne vous permet pas d\'accéder à cette page</p>';
    }
 } else {
    ?>

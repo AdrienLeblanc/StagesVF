@@ -18,7 +18,7 @@ if ($connect == "1") // Si le visiteur s'est identifié.
 
    if(!isset($_SESSION['messagesParPage']))
    {
-      $_SESSION['messagesParPage'] = 5;
+      $_SESSION['messagesParPage'] = 10;
    }
 
    if(isset($_POST['nb_elem']))
@@ -79,7 +79,13 @@ if ($connect == "1") // Si le visiteur s'est identifié.
                <td>
                   <form method="post" action="filedownload.php">
                      <input type="hidden" name="id" value="<?php echo htmlspecialchars($donnees['up_id']); ?>" />
-                     <input type="submit" class="btn btn-primary" value="Télécharger">
+                     <input type="submit" class="btn btn-primary" value="<?php
+                     if ($_SESSION['status'] == 'Administrateur' || $_SESSION['status'] == 'Gestionnaire')
+                     {
+                        echo 'Télécharger';
+                     } else {
+                        echo 'Ajout export';
+                     }?>">
                   </form>
                </td>
             </tr>

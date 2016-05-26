@@ -72,7 +72,7 @@ if ($connect == "1") // Si le visiteur s'est identifié.
             </center>
             <?php
          }
-      } else { // Sinon on insert dans la BDD (on écrase toutes les infos) sans les mots de passe
+      } else { // Sinon on update dans la BDD (on écrase toutes les infos) sans les mots de passe
          $sql = "UPDATE users SET firstname = '" . $new_firstname . "', lastname = '" . $new_lastname . "', email = '" . $new_email . "' WHERE pseudo = '" . $_SESSION['pseudo'] . "'";
          $requete = $bdd->exec($sql); // Requete sans changement de mot de passe
          ?>

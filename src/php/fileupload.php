@@ -67,9 +67,10 @@ if ($connect == "1") // Si le visiteur s'est identifié.
       return $check;
 
       // } else {
+      //    $taille = filesize('log.txt'):
       //    header('Content-Transfer-Encoding: binary'); // Transfert en binaire (fichier)
       //    header('Content-Disposition: attachment; filename="log.txt"'); // Nom du fichier
-      //    header('Content-Length: '.$donnees["up_filesize"]); // Taille du fichier
+      //    header('Content-Length: '.$taille); // Taille du fichier
       //    readfile("errors/log.txt"); // Envoi du fichier dont le chemin est passé en paramètre
       //    echo 'Erreurs survenues (checkez le fichier log.txt)';
       //    # code...
